@@ -1,0 +1,110 @@
+{
+  "voterEligibilityRules": {
+    "resident": {
+      "minimumAge": 18,
+      "citizenshipRequired": true,
+      "residencyStatus": "ordinarily_resident",
+      "requiredDocuments": [
+        "Aadhaar_Card",
+        "PAN_Card",
+        "Proof_of_Address"
+      ],
+      "verificationMethod": "otp_and_biometric",
+      "votingMethodAllowed": ["evm_at_polling_booth"]
+    },
+    "nri": {
+      "minimumAge": 18,
+      "citizenshipRequired": true,
+      "residencyStatus": "non_resident_indian",
+      "requiredDocuments": [
+        "Indian_Passport_Copy",
+        "Valid_Visa_Status",
+        "Overseas_Address_Proof"
+      ],
+      "verificationMethod": "embassy_attestation",
+      "votingMethodAllowed": ["eTPBS", "proxy_voting"]
+    }
+  },
+  "registrationPhases": [
+    {
+      "phaseId": "phase_1",
+      "phaseName": "Eligibility Check",
+      "description": "Determine if the user is a Resident or NRI and verify basic age/citizenship requirements.",
+      "requiredFields": ["dateOfBirth", "citizenshipStatus", "residencyType"]
+    },
+    {
+      "phaseId": "phase_2",
+      "phaseName": "Document Upload",
+      "description": "Upload required identification and address proofs based on eligibility type.",
+      "requiredFields": ["documentFiles", "documentNumbers"]
+    },
+    {
+      "phaseId": "phase_3",
+      "phaseName": "AI Verification",
+      "description": "Automated OCR and AI-based cross-referencing of uploaded documents.",
+      "requiredFields": ["aiConfidenceScore", "verificationStatus"]
+    },
+    {
+      "phaseId": "phase_4",
+      "phaseName": "EPIC Generation",
+      "description": "Generation of the digital Electoral Photo Identity Card (EPIC).",
+      "requiredFields": ["epicNumber", "digitalCardUrl"]
+    }
+  ],
+  "historicalIncidentData": {
+    "schemaDescription": "Structure for historical security incidents to train/inform the AI security module.",
+    "incidentStructure": {
+      "incidentId": "string (UUID)",
+      "timestamp": "ISO 8601 Date String",
+      "location": {
+        "state": "string",
+        "constituency": "string",
+        "pollingStationCode": "string",
+        "coordinates": {
+          "lat": "number",
+          "lng": "number"
+        }
+      },
+      "severity": "enum('low', 'medium', 'high', 'critical')",
+      "incidentCategory": "enum('evm_malfunction', 'voter_intimidation', 'fake_voting', 'violence', 'procedural_delay')",
+      "incidentSummary": "string",
+      "resolutionStatus": "enum('open', 'investigating', 'resolved')"
+    },
+    "sampleData": [
+      {
+        "incidentId": "INC-2024-WB-001",
+        "timestamp": "2024-05-12T08:30:00Z",
+        "location": {
+          "state": "West Bengal",
+          "constituency": "Diamond Harbour",
+          "pollingStationCode": "PS-405",
+          "coordinates": {
+            "lat": 22.1906,
+            "lng": 88.1884
+          }
+        },
+        "severity": "high",
+        "incidentCategory": "violence",
+        "incidentSummary": "Clash between rival party workers outside the polling booth. Police deployment increased.",
+        "resolutionStatus": "resolved"
+      },
+      {
+        "incidentId": "INC-2024-UP-042",
+        "timestamp": "2024-05-19T14:15:00Z",
+        "location": {
+          "state": "Uttar Pradesh",
+          "constituency": "Varanasi",
+          "pollingStationCode": "PS-102",
+          "coordinates": {
+            "lat": 25.3176,
+            "lng": 82.9739
+          }
+        },
+        "severity": "medium",
+        "incidentCategory": "evm_malfunction",
+        "incidentSummary": "EVM machine stopped registering votes for 30 minutes. Replaced by sector magistrate.",
+        "resolutionStatus": "investigating"
+      }
+    ]
+  }
+}

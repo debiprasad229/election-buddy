@@ -1,0 +1,62 @@
+[
+  {
+    "incidentId": "INC-2024-WB-001",
+    "timestamp": "2024-05-12T08:30:00Z",
+    "location": {
+      "state": "West Bengal",
+      "constituency": "Diamond Harbour",
+      "pollingStationCode": "PS-405"
+    },
+    "severity": "high",
+    "incidentCategory": "violence",
+    "incidentSummary": "Violent clash involving armed individuals from rival parties outside the polling booth. Significant property damage and 12 injured. Booth capturing attempt thwarted by police."
+  },
+  {
+    "incidentId": "INC-2024-WB-002",
+    "timestamp": "2024-05-12T11:15:00Z",
+    "location": {
+      "state": "West Bengal",
+      "constituency": "Diamond Harbour",
+      "pollingStationCode": "PS-406"
+    },
+    "severity": "critical",
+    "incidentCategory": "violence",
+    "incidentSummary": "Mob attacked security personnel transferring EVMs. Vehicles set on fire. High threat level reported by presiding officer."
+  },
+  {
+    "incidentId": "INC-2024-UP-042",
+    "timestamp": "2024-05-19T14:15:00Z",
+    "location": {
+      "state": "Uttar Pradesh",
+      "constituency": "Varanasi",
+      "pollingStationCode": "PS-102"
+    },
+    "severity": "medium",
+    "incidentCategory": "evm_malfunction",
+    "incidentSummary": "EVM machine stopped registering votes for 30 minutes due to battery failure. Replaced by sector magistrate without conflict."
+  },
+  {
+    "incidentId": "INC-2024-UP-043",
+    "timestamp": "2024-05-19T09:00:00Z",
+    "location": {
+      "state": "Uttar Pradesh",
+      "constituency": "Varanasi",
+      "pollingStationCode": "PS-108"
+    },
+    "severity": "low",
+    "incidentCategory": "procedural_delay",
+    "incidentSummary": "Polling delayed by 45 minutes as presiding officer arrived late. No crowd agitation."
+  },
+  {
+    "incidentId": "INC-2024-KA-011",
+    "timestamp": "2024-04-26T10:30:00Z",
+    "location": {
+      "state": "Karnataka",
+      "constituency": "Bangalore South",
+      "pollingStationCode": "PS-201"
+    },
+    "severity": "low",
+    "incidentCategory": "fake_voting",
+    "incidentSummary": "Three individuals caught with fake voter IDs. Handed over to local police peacefully."
+  }
+]
