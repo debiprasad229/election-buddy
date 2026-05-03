@@ -66,6 +66,10 @@ const Chatbot = () => {
         body: JSON.stringify({ messages: apiMessages })
       });
 
+      if (response.status === 429) {
+        setMessages(prev => [...prev, { role: 'assistant', content: t('rate_limit_error') }]);
+        return;
+      }
       if (!response.ok) throw new Error('Network response was not ok');
       const data = await response.json();
       
@@ -88,7 +92,7 @@ const Chatbot = () => {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
             className="bg-white dark:bg-slate-900 w-80 sm:w-96 rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 mb-4 overflow-hidden flex flex-col transition-colors"
-            style={{ height: '500px', maxHeight: '70vh' }}
+            style={{ height: '400px', maxHeight: '60vh' }}
           >
             {/* Header */}
             <div className="bg-governance-900 p-4 flex items-center justify-between shrink-0">

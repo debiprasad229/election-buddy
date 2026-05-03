@@ -5,10 +5,19 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { z } from 'zod';
 
+import path from 'path';
+import { fileURLToPath } from 'url';
+
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
-const port = 3002;
+const port = process.env.PORT || 3002;
+
+// Trust proxy headers (required for Cloud Run so rate limiter uses real client IP)
+app.set('trust proxy', true);
 
 // --- SECURITY: BASE HARDENING ---
 app.use(helmet()); // Sets various HTTP headers for security (XSS, Clickjacking, etc.)
@@ -17,7 +26,7 @@ app.use(helmet()); // Sets various HTTP headers for security (XSS, Clickjacking,
 // --- SECURITY: CORS RESTRICTION ---
 const allowedOrigins = [
   'http://localhost:5173', // Local Vite development
-  /https?:\/\/.*\.a\.run\.app$/ // Google Cloud Run production domains
+  /https?:\/\/.*\.run\.app$/ // Google Cloud Run production domains
 ];
 
 app.use(cors({
@@ -63,8 +72,8 @@ const containsInjection = (text) => {
 // --- SECURITY: RATE LIMITING ---
 const apiLimiter = rateLimit({
   windowMs: 1 * 60 * 1000, // 1 minute
-  max: 10, // Limit each IP to 10 requests per minute
-  message: { error: 'Too many requests from this IP, please try again after a minute.' },
+  max: 20, // Limit each IP to 20 requests per minute
+  message: { error: 'Too many requests. Please wait a moment and try again.' },
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -109,15 +118,34 @@ app.post('/api/analyze-security', async (req, res) => {
       return res.status(400).json({ error: 'Your request contains prohibited terms or patterns.' });
     }
 
+    const languageDirectives = {
+      'Odia': `
+1. The 'recommendations' array MUST be written ENTIRELY in Odia script and grammar.
+2. Use the Odia script (e.g., ସିଆରପିଏଫ୍ instead of CRPF, ସିସିଟିଭି instead of CCTV). 
+3. Every single word, number, and character in every recommendation string must use the Odia script.
+4. Example of pure Odia tone and script: "ସୁରକ୍ଷା ବୃଦ୍ଧି ପାଇଁ ଅତିରିକ୍ତ ପୋଲିସ ବାହିନୀ ନିୟୋଜିତ କରନ୍ତୁ।"
+5. Avoid transliteration like "Security brudhi pai..." - this is strictly forbidden. Use the actual script.`,
+      'English': `
+1. The 'recommendations' array MUST be written ENTIRELY in English.
+2. Use standard English script and professional governance terminology.
+3. Every single word and number in the recommendations array must be in English.`,
+      'Hindi': `
+1. The 'recommendations' array MUST be written ENTIRELY in Hindi (Devanagari script).
+2. Use professional Hindi terminology for governance and security.`,
+      'Telugu': `
+1. The 'recommendations' array MUST be written ENTIRELY in Telugu script.`,
+      'Tamil': `
+1. The 'recommendations' array MUST be written ENTIRELY in Tamil script.`
+    };
+
+    const targetDirective = languageDirectives[targetLang] || `
+1. The 'recommendations' array MUST be written ENTIRELY in ${targetLang} script and grammar.
+2. Use the native script of ${targetLang} for all words and numbers.`;
+
     const systemPrompt = `You are Matdan Mitra, a specialized Security Intelligence AI for election safety. Your ONLY purpose is to provide risk levels and recommendations for election security based on provided data. 
 
 LANGUAGE DIRECTIVE:
-1. The 'recommendations' array MUST be written ENTIRELY in ${targetLang} script and grammar.
-2. Do NOT use English script (Romanized/transliterated) for ${targetLang}. 
-3. If ${targetLang} is 'Odia', you MUST use the Odia script (e.g., ସିଆରପିଏଫ୍ instead of CRPF, ସିସିଟିଭି instead of CCTV). 
-4. Every single word, number, and character in every recommendation string must use the ${targetLang} script.
-5. Example of pure Odia tone and script: "ସୁରକ୍ଷା ବୃଦ୍ଧି ପାଇଁ ଅତିରିକ୍ତ ପୋଲିସ ବାହିନୀ ନିୟୋଜିତ କରନ୍ତୁ।"
-6. Avoid transliteration like "Security brudhi pai..." - this is strictly forbidden. Use the actual script.
+${targetDirective}
 
 JSON FORMAT: Respond in pure JSON format containing exactly two fields: 'riskLevel' (number 1-10) and 'recommendations' (an array of strings).`;
 
@@ -217,6 +245,14 @@ app.post('/api/chat', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// --- STATIC FILES & SPA ROUTING ---
+app.use(express.static(path.join(__dirname, 'dist')));
+
+app.use((req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
+// ------------------------------------
 
 app.listen(port, () => {
   console.log(`Security Proxy Server running on port ${port}`);

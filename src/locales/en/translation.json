@@ -49,6 +49,7 @@
   "union_territories": "Union Territories",
   "no_regions_found": "No regions found.",
   "analysis_failed": "Analysis Failed",
+  "rate_limit_error": "You're sending too many requests. Please wait a moment and try again.",
   "gemini_analyzing": "AI Analyzing Data...",
   "safety_index": "Safety Index",
   "high_risk_zone": "High Risk Zone",

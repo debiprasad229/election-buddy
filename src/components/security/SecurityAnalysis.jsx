@@ -72,7 +72,7 @@ const SecurityAnalysis = () => {
     if (!selectedLocation) return;
     
     setAnalysisError(null);
-    const locationKey = `${selectedLocation.replace(/\s+/g, '-').toLowerCase()}-${language}`;
+    const locationKey = `${selectedLocation.replace(/\s+/g, '-').toLowerCase()}-${language}-v3`;
     
     // Check Cache
     if (securityCache[locationKey]) {
@@ -83,9 +83,13 @@ const SecurityAnalysis = () => {
     
     const relevantIncidents = getIncidentsForLocation(selectedLocation);
     const targetLanguage = languageMap[language] || 'English';
+    const languageInstruction = targetLanguage === 'English' 
+      ? `CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL recommendations in professional English. Ensure the tone is appropriate for governance and election security.`
+      : `CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL recommendations exclusively in ${targetLanguage} native script and proper tone. Do NOT use English words, English numbers, or Roman script anywhere in the recommendations array. Every single word and number in the recommendations array must be in ${targetLanguage} script. This is mandatory and non-negotiable. Avoid transliteration at all costs.`;
+
     const prompt = `Analyze the election security risk for the region: ${selectedLocation}. Here are some past recorded incidents (if any): ${JSON.stringify(relevantIncidents)}. Rate the risk level from 1-10 and recommend specific security deployments (e.g., CRPF deployment level, CCTV density). Return a JSON object with 'riskLevel' (number 1-10) and 'recommendations' (a string array containing EXACTLY 5 specific recommendations). 
     
-    CRITICAL LANGUAGE REQUIREMENT: You MUST write ALL recommendations exclusively in ${targetLanguage} native script and proper tone. Do NOT use English words, English numbers, or Roman script anywhere in the recommendations array. Every single word and number in the recommendations array must be in ${targetLanguage} script. This is mandatory and non-negotiable. Avoid transliteration at all costs.`;
+    ${languageInstruction}`;
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/analyze-security`, {
@@ -93,6 +97,10 @@ const SecurityAnalysis = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt, languageCode: language, languageName: targetLanguage })
       });
+
+      if (response.status === 429) {
+        throw new Error(t('rate_limit_error'));
+      }
 
       if (!response.ok) {
         let errMsg = `API Error: ${response.status}`;
@@ -126,7 +134,7 @@ const SecurityAnalysis = () => {
     }
   }, [selectedLocation, language]);
 
-  const locationKey = selectedLocation ? `${selectedLocation.replace(/\s+/g, '-').toLowerCase()}-${language}` : '';
+  const locationKey = selectedLocation ? `${selectedLocation.replace(/\s+/g, '-').toLowerCase()}-${language}-v3` : '';
   const currentAnalysis = securityCache[locationKey];
   const isHighRisk = currentAnalysis?.riskLevel > 7;
 
