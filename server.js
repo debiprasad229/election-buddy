@@ -62,11 +62,13 @@ const forbiddenPatterns = [
   /you are now/i,
   /jailbreak/i
 ];
+export { forbiddenPatterns };
 
 const containsInjection = (text) => {
   if (typeof text !== 'string') return false;
   return forbiddenPatterns.some(pattern => pattern.test(text));
 };
+export { containsInjection };
 // ------------------------------------------
 
 // --- SECURITY: RATE LIMITING ---
@@ -155,6 +157,7 @@ JSON FORMAT: Respond in pure JSON format containing exactly two fields: 'riskLev
       body: JSON.stringify({
         contents: [{ parts: [{ text: prompt }] }],
         system_instruction: { parts: [{ text: systemPrompt }] },
+        tools: [{ google_search: {} }],
         generationConfig: {
           response_mime_type: "application/json"
         }
@@ -220,6 +223,7 @@ app.post('/api/chat', async (req, res) => {
     if (systemMessage) {
       requestBody.system_instruction = { parts: [{ text: systemMessage.content }] };
     }
+    requestBody.tools = [{ google_search: {} }];
 
     const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',

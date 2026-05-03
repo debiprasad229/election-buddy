@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { CheckCircle2, Circle, AlertCircle, FileText, Upload, ShieldCheck } from 'lucide-react';
 import { useElectionStore } from '../../store/useElectionStore';
 import { cn } from '../../lib/utils';
+import { checkEligibility } from '../../utils/eligibility';
 
 const VoterJourneyWizard = () => {
   const { t } = useTranslation();
@@ -21,12 +22,10 @@ const VoterJourneyWizard = () => {
   const [eligibilityError, setEligibilityError] = useState('');
 
   const handleEligibilitySubmit = () => {
-    if (!age || parseInt(age) < 18) {
-      setEligibilityError('age_error');
-      return;
-    }
-    if (!isCitizen) {
-      setEligibilityError('citizenship_error');
+    const { isValid, error } = checkEligibility(age, isCitizen);
+    
+    if (!isValid) {
+      setEligibilityError(error);
       return;
     }
     

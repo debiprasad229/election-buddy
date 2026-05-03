@@ -114,7 +114,11 @@ const Chatbot = () => {
             </div>
 
             {/* Messages Area */}
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-slate-950 transition-colors">
+            <div 
+              className="flex-1 overflow-y-auto p-4 space-y-4 bg-slate-50 dark:bg-slate-950 transition-colors"
+              role="log"
+              aria-live="polite"
+            >
               {messages.map((msg, idx) => (
                 <div 
                   key={idx} 
@@ -161,6 +165,7 @@ const Chatbot = () => {
                 type="submit"
                 disabled={!input.trim() || isLoading}
                 className="bg-governance-600 hover:bg-governance-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 disabled:cursor-not-allowed text-white p-2.5 rounded-full transition-colors flex items-center justify-center"
+                aria-label="Send message"
               >
                 <Send className="w-4 h-4" />
               </button>
@@ -176,6 +181,8 @@ const Chatbot = () => {
         onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 bg-governance-900 text-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all border-4 border-white dark:border-slate-900"
         title={t('ask_assistant')}
+        aria-label={isOpen ? "Close assistant" : "Ask assistant"}
+        aria-expanded={isOpen}
       >
         {isOpen ? <X className="w-6 h-6" /> : <MessageSquare className="w-6 h-6" />}
       </motion.button>

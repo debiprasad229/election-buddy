@@ -37,6 +37,7 @@ const LanguageFab = () => {
               <button
                 key={lang.code}
                 onClick={() => handleLanguageChange(lang.code)}
+                aria-pressed={language === lang.code}
                 className={`flex items-center justify-between gap-4 px-4 py-2 rounded-xl text-sm transition-colors ${language === lang.code
                     ? 'bg-governance-100 dark:bg-governance-900/50 text-governance-800 dark:text-governance-300 font-semibold'
                     : 'text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800'
@@ -55,6 +56,9 @@ const LanguageFab = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-14 h-14 bg-governance-600 hover:bg-governance-700 text-white rounded-full flex items-center justify-center shadow-lg shadow-governance-600/30 transition-transform hover:scale-105 active:scale-95"
+        aria-label="Change language"
+        aria-expanded={isOpen}
+        aria-haspopup="true"
       >
         {isOpen ? (
           <X className="w-6 h-6" />
