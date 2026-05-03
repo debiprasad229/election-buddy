@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
+import multer from 'multer';
 import { z } from 'zod';
 
 import path from 'path';
@@ -48,9 +49,20 @@ app.use(cors({
 }));
 // ------------------------------------
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 
-// --- SECURITY: PROMPT INJECTION DEFENSE ---
+// Configure multer for file handling
+const storage = multer.memoryStorage();
+const upload = multer({ 
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+});
+
+/**
+ * Security middleware: Checks for prompt injection patterns.
+ * @param {string} text - The input text to check.
+ * @returns {boolean} True if injection is detected.
+ */
 const forbiddenPatterns = [
   /ignore all/i,
   /previous instructions/i,
@@ -257,6 +269,53 @@ app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'dist', 'index.html'));
 });
 // ------------------------------------
+
+/**
+ * AI Document Verification Endpoint
+ * Uses Gemini Vision to analyze uploaded documents for authenticity.
+ */
+app.post('/api/verify-document', upload.single('document'), async (req, res) => {
+  try {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) throw new Error('API Key missing');
+    if (!req.file) return res.status(400).json({ error: 'No document uploaded' });
+
+    const base64Data = req.file.buffer.toString('base64');
+    const mimeType = req.file.mimetype;
+
+    const prompt = "You are an official election document verifier. Analyze this image. Is it a valid Indian identity document (like Aadhaar, PAN, or Passport) for voter registration? Respond with a JSON object: { 'is_valid': boolean, 'reason': 'short explanation', 'document_type': 'string' }";
+
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { text: prompt },
+            {
+              inline_data: {
+                mime_type: mimeType,
+                data: base64Data
+              }
+            }
+          ]
+        }],
+        generationConfig: {
+          response_mime_type: "application/json"
+        }
+      })
+    });
+
+    if (!response.ok) throw new Error('Gemini API Error');
+    const data = await response.json();
+    const result = JSON.parse(data.candidates[0].content.parts[0].text);
+
+    res.json(result);
+  } catch (error) {
+    console.error('Verification error:', error);
+    res.status(500).json({ error: 'Verification failed' });
+  }
+});
 
 app.listen(port, () => {
   console.log(`Security Proxy Server running on port ${port}`);

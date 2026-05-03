@@ -41,6 +41,11 @@ const indianRegions = {
   ]
 };
 
+/**
+ * SecurityAnalysis Component
+ * Provides AI-driven predictive security risk modeling for different regions
+ * using Google Gemini 2.5 Flash and real-time search grounding.
+ */
 const SecurityAnalysis = () => {
   const { t } = useTranslation();
   

@@ -5,13 +5,21 @@ import { CheckCircle2, Circle, AlertCircle, FileText, Upload, ShieldCheck } from
 import { useElectionStore } from '../../store/useElectionStore';
 import { cn } from '../../lib/utils';
 import { checkEligibility } from '../../utils/eligibility';
+import { API_BASE_URL } from '../../config';
 
+/**
+ * VoterJourneyWizard Component
+ * Handles the multi-step voter registration process, including eligibility checks,
+ * document requirements, and AI-powered document verification using Gemini Vision.
+ */
 const VoterJourneyWizard = () => {
   const { t } = useTranslation();
   const { userType, setUserType, submissions, addSubmission } = useElectionStore();
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verificationResult, setVerificationResult] = useState(null);
   const [submittedRefId, setSubmittedRefId] = useState('');
   const fileInputRef = useRef(null);
   
@@ -51,27 +59,61 @@ const VoterJourneyWizard = () => {
     fileInputRef.current?.click();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (selectedFiles.length === 0) {
       alert(t('please_upload_docs'));
       return;
     }
     
     setIsUploading(true);
-    // Simulate upload delay
-    setTimeout(() => {
+    setIsVerifying(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('document', selectedFiles[0]);
+
+      const response = await fetch(`${API_BASE_URL}/api/verify-document`, {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) throw new Error('Verification failed');
+      
+      const result = await response.json();
+      setVerificationResult(result);
+
       const refId = `MM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
-      setSubmittedRefId(refId); // Save so step 4 displays the same ID
+      setSubmittedRefId(refId);
+      
       addSubmission({
         id: refId,
         date: new Date().toLocaleDateString() + ' ' + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
         files: selectedFiles.map(f => f.name),
-        status: 'Under AI Review'
+        status: result.is_valid ? 'Verified by AI' : 'Flagged for Review',
+        ai_reason: result.reason
       });
+
       setIsUploading(false);
+      setIsVerifying(false);
       setCurrentStep(4);
-      setSelectedFiles([]); // Reset
-    }, 1500);
+      setSelectedFiles([]); 
+    } catch (error) {
+      console.error('Upload error:', error);
+      setIsUploading(false);
+      setIsVerifying(false);
+      alert('AI Verification service unavailable. Proceeding with manual review.');
+      
+      // Fallback
+      const refId = `MM-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      setSubmittedRefId(refId);
+      addSubmission({
+        id: refId,
+        date: new Date().toLocaleDateString(),
+        files: selectedFiles.map(f => f.name),
+        status: 'Manual Review'
+      });
+      setCurrentStep(4);
+    }
   };
 
   return (
@@ -369,9 +411,35 @@ const VoterJourneyWizard = () => {
                   </p>
                 </div>
                 
-                <div className="bg-governance-50 border border-governance-100 rounded-xl p-4 mt-8 max-w-sm mx-auto text-center">
-                  <p className="text-sm text-governance-800 font-medium">{t('app_ref_id')}</p>
-                  <p className="text-xl font-bold tracking-wider text-governance-900 mt-1">{submittedRefId}</p>
+                <div className="bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl p-6 mt-8 max-w-md mx-auto">
+                  <div className="flex items-center justify-between mb-4">
+                    <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{t('app_ref_id')}</p>
+                    <p className="text-lg font-bold tracking-wider text-governance-600 dark:text-governance-400">{submittedRefId}</p>
+                  </div>
+                  
+                  {verificationResult && (
+                    <div className={cn(
+                      "flex items-start gap-3 p-4 rounded-lg text-sm text-left border",
+                      verificationResult.is_valid 
+                        ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300"
+                        : "bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800 text-amber-800 dark:text-amber-300"
+                    )}>
+                      <div className="shrink-0 mt-0.5">
+                        {verificationResult.is_valid ? <CheckCircle2 className="w-5 h-5" /> : <AlertCircle className="w-5 h-5" />}
+                      </div>
+                      <div>
+                        <p className="font-bold mb-1">
+                          AI Verification: {verificationResult.is_valid ? 'Successful' : 'Flagged'}
+                        </p>
+                        <p className="opacity-90">{verificationResult.reason}</p>
+                        {verificationResult.document_type && (
+                          <p className="mt-2 text-xs font-semibold uppercase tracking-wider">
+                            Detected: {verificationResult.document_type}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="text-center pt-8">

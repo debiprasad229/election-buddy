@@ -3,10 +3,11 @@ import Layout from './components/layout/Layout';
 import VoterJourneyWizard from './components/registration/VoterJourneyWizard';
 import SecurityAnalysis from './components/security/SecurityAnalysis';
 import ElectionProcessTimeline from './components/education/ElectionProcessTimeline';
+import PollingStationMap from './components/education/PollingStationMap';
 import UserApplications from './components/admin/UserApplications';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, UserPlus, ShieldAlert } from 'lucide-react';
+import { LayoutDashboard, UserPlus, ShieldAlert, MapPin } from 'lucide-react';
 import { useElectionStore } from './store/useElectionStore';
 
 function App() {
@@ -95,6 +96,17 @@ function App() {
           transition={{ duration: 0.5 }}
         >
           <ElectionProcessTimeline />
+        </motion.div>
+      )}
+
+      {activeView === 'booth' && (
+        <motion.div
+          key="booth"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <PollingStationMap />
         </motion.div>
       )}
       

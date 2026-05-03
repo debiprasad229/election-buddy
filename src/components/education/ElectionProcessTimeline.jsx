@@ -17,6 +17,11 @@ const locNum = (num, lang) => {
   return String(num).split('').map(c => /[0-9]/.test(c) ? localDigits[lang][parseInt(c)] : c).join('');
 };
 
+/**
+ * ElectionProcessTimeline Component
+ * An interactive, localized educational guide that explains the Indian election 
+ * process from notification to results.
+ */
 const ElectionProcessTimeline = () => {
   const { t } = useTranslation();
   const { language } = useElectionStore();

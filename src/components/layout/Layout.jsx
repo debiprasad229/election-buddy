@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Shield, LayoutDashboard, UserPlus, Settings, BookOpen, Menu, X, FileText, Sun, Moon } from 'lucide-react';
+import { Shield, LayoutDashboard, UserPlus, Settings, BookOpen, Menu, X, FileText, Sun, Moon, MapPin } from 'lucide-react';
 import LanguageFab from './LanguageFab';
 import Chatbot from '../education/Chatbot';
 import { useElectionStore } from '../../store/useElectionStore';
@@ -47,6 +47,7 @@ const Layout = ({ children }) => {
           {[
             { id: 'process', icon: BookOpen, label: t('election_process') },
             { id: 'registration', icon: UserPlus, label: t('registration') },
+            { id: 'booth', icon: MapPin, label: t('find_booth') },
             { id: 'security', icon: Shield, label: t('security') },
             { id: 'applications', icon: FileText, label: t('users_applications') },
           ].map((item) => {
