@@ -91,5 +91,4 @@ Matdan Mitra is designed to be a living platform for national democracy:
 - **Frontend**: React (Vite), Tailwind CSS, Framer Motion, Zustand
 - **Backend**: Node.js, Express, Multer (File Handling), Helmet, Zod
 - **AI**: Google Gemini 2.5 Flash API (Text + Vision + Search)
-- **Maps**: Google Maps Embed API
 - **Testing**: Native Node.js Test Runner
