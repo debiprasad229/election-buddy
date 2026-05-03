@@ -83,9 +83,9 @@ const Layout = ({ children }) => {
         <div className={`p-6 border-t transition-colors ${isDarkMode ? 'border-governance-800 bg-governance-900/30' : 'border-slate-100 bg-slate-50'}`}>
           <div className="flex items-center gap-2 opacity-70 hover:opacity-100 transition-opacity">
             <img 
-              src="https://www.gstatic.com/images/branding/product/2x/google_cloud_64dp.png" 
+              src="https://www.gstatic.com/images/branding/product/1x/google_cloud_48dp.png" 
               alt="Google Cloud" 
-              className="w-5 h-5 grayscale"
+              className="w-5 h-5 opacity-80"
             />
             <span className={`text-[10px] font-bold tracking-widest uppercase ${isDarkMode ? 'text-governance-300' : 'text-slate-500'}`}>
               Powered by Google Cloud
