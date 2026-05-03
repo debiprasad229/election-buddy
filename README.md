@@ -1,8 +1,8 @@
 # Matdan Mitra
 
 A scalable, multi-lingual, AI-driven platform built to streamline voter registration, educate citizens on the democratic process, and provide predictive election security intelligence — all powered by Google Gemini.
-🔗 **Live Demo**: [https://matdan-mitra-546720462040.asia-south2.run.app](https://matdan-mitra-546720462040.asia-south2.run.app)
 ---
+🔗 **Live Demo**: [https://matdan-mitra-546720462040.asia-south2.run.app](https://matdan-mitra-546720462040.asia-south2.run.app)
 
 ## 🤖 The Agentic Workflow
 This application was architected and built using an **Advanced Agentic AI Workflow**. Instead of writing code manually line-by-line, an AI pair-programmer (Antigravity) iteratively gathered requirements, generated implementation plans, modified the DOM, wrote tests, and rapidly prototyped features. This approach enables moving from concept to a highly polished, robust, multi-lingual production application in a fraction of the time.
