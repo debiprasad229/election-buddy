@@ -62,7 +62,6 @@ Designed for inclusivity, adhering to modern accessibility standards:
 - **JSDoc Standard**: All components and backend endpoints are documented using industry-standard JSDoc for maximum maintainability and evaluator clarity.
 
 ---
-
 ## 🚀 Running the Demo Locally
 
 ### Setup
@@ -77,6 +76,14 @@ GEMINI_API_KEY="your_key_here"
 npm run dev
 ```
 The app runs on `http://localhost:5173` with the backend proxy on `http://localhost:3002`.
+
+## 🔮 Future Scope & Roadmap
+Matdan Mitra is designed to be a living platform for national democracy:
+
+- **Real-Time Incident Streaming via News APIs**: Replacing static datasets with a live pipeline integrating news RSS feeds and social media signals for real-time security alerts.
+- **Blockchain for Election Integrity**: Implementing a decentralized ledger to ensure voter registration records are immutable and transparent.
+- **Offline-First PWA**: Enabling offline registration capabilities for rural areas with intermittent connectivity.
+- **Voice-Driven Multi-lingual Assistant**: Expanding to all 22 scheduled Indian languages with voice command support.
 
 ---
 
