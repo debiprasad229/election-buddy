@@ -1,4 +1,4 @@
-# Matdan Mitra 🇮🇳
+# Matdan Mitra
 
 A scalable, multi-lingual, AI-driven platform built to streamline voter registration, educate citizens on the democratic process, and provide predictive election security intelligence — all powered by Google Gemini.
 
